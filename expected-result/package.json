@@ -1,0 +1,28 @@
+{
+  "name": "contact-manager",
+  "version": "1.0.0",
+  "description": "Simple contact manager application following CRC design methodology",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@vitest/ui": "^1.0.4",
+    "jsdom": "^24.0.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vitest": "^1.0.4"
+  },
+  "keywords": [
+    "contact-manager",
+    "crc-cards",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT"
+}
