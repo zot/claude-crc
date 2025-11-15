@@ -1,5 +1,7 @@
 # Project Instructions
 
+**Version:** 1.0.0
+
 ## CRC Modeling Workflow
 
 **DO NOT generate code directly from `specs/*.md` files!**
@@ -72,3 +74,31 @@ Use the `documenter` agent to create:
 
 **Example offer:**
 "I've completed the [design/implementation]. Would you like me to generate/update the project documentation (requirements, design overview, developer guide, and user manual)?"
+
+---
+
+## 🚀 Release Management
+
+**Creating a New Release:**
+
+To create a new release with the distributable installer:
+
+1. **Update version** in this file (top of document)
+2. **Regenerate distributable:**
+   ```bash
+   python3 .claude/scripts/bundle.py
+   ```
+3. **Commit changes:**
+   ```bash
+   git add -A
+   git commit -m "Release v1.0.0"
+   ```
+4. **Create release with gh CLI:**
+   ```bash
+   gh release create v1.0.0 \
+     .claude/scripts/claude-crc-dist.py \
+     --title "CRC Modeling Framework v1.0.0" \
+     --notes "Release notes here"
+   ```
+
+The distributable (`claude-crc-dist.py`) will be automatically attached to the GitHub release for users to download.
