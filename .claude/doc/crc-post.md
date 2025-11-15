@@ -1,4 +1,5 @@
-# Use claude-crc And Stop Losing Features to 'Generous' Inference: 3-Level Spec-Driven Development For Claude
+# Use claude-crc, Don't Lose Features to 'Generous' Inference
+## *3-Level Spec-Driven Development For Claude*
 
 ## The Problem With 2-Level Spec-Driven Development
 
@@ -98,11 +99,17 @@ Your app might (will probably) not work as soon as Claude generates it. There mi
 
 Maybe you've been vibe coding, 2-level spec coding, or using a spec-driven process that doesn't provide an easy-to-read middle layer, traceability, gap analysis, or doesn't support continued development very well. If so, give claude-crc a try and see how it works.  You'll get a project that you can change along the way without gaining weird features you didn't want and without losing ones you found out you wanted but didn't actually ask for.
 
-**Readable designs** - CRC cards show Claude's interpretation before code
-**Traceability** - Every file links back to requirements
-**Gap analysis** - Automatic detection of spec/design/code drift
-**Bidirectional updates** - Change specs, design, or code and propagate
+-  **Readable designs** CRC cards show Claude's interpretation before code
+-  **Traceability** Every file links back to requirements
+-  **Gap analysis** Automatic detection of spec/design/code drift
+-  **Bidirectional updates** Change specs, design, or code and propagate
 
-**Get Started:** [Download v1.0.0](https://github.com/zot/claude-crc/releases/latest)
-**Documentation:** [GitHub](https://github.com/zot/claude-crc)
-**Questions?** [Open an Issue](https://github.com/zot/claude-crc/issues)
+<!-- end of list -->
+
+-  **Get Started:** [Download v1.0.0](https://github.com/zot/claude-crc/releases/latest)
+-  **Documentation:** [GitHub](https://github.com/zot/claude-crc)
+-  **Questions?** [Open an Issue](https://github.com/zot/claude-crc/issues)
+
+<!-- end of list -->
+
+
