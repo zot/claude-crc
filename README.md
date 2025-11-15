@@ -1,12 +1,18 @@
 # CRC Modeling for AI-Assisted Development
 
-**A complete toolkit for bridging the gap between human intent and AI implementation through three-tier design methodology**
+**Stop losing features to "generous" inference—see how Claude interprets your specs before it writes code**
 
 ---
 
-## What is CRC Modeling?
+## The Problem
 
-CRC (Class-Responsibility-Collaboration) Modeling is a three-tier development methodology that creates clear, traceable paths from requirements to code:
+2-level spec-driven development suffers from the same problem as vibe coding—it just takes longer to bite you.
+
+Claude "generously" infers features that aren't in your specs. You don't notice until you change a spec and Claude removes features you've come to rely on. **You need to see how Claude interprets your specs before it writes thousands of lines of code.**
+
+## The Solution: 3-Level CRC Modeling
+
+CRC (Class-Responsibility-Collaboration) Modeling adds a middle layer where you can verify Claude's interpretation in human-readable designs:
 
 ```
 Level 1: Human Specs (WHAT & WHY)
@@ -20,17 +26,44 @@ Level 3: Implementation (HOW - Code)
 ```
 
 **Key Benefits:**
-- **Reveals AI interpretation**: Level 2 shows how AI understood your specs
-- **Early error detection**: Catch misunderstandings before coding
-- **Complete traceability**: Every line of code traces back to requirements
-- **Cross-session stability**: Design patterns guide future AI decisions
-- **Knowledge retention**: Documentation survives staff transitions
+
+✅ **Stop losing features** - Catch "generous" inferences before they become code
+✅ **Readable designs** - CRC cards show Claude's interpretation, not thousands of lines
+✅ **Complete traceability** - Every line of code traces back to requirements
+✅ **Bidirectional updates** - Change specs, design, or code and propagate safely
+✅ **Cross-session stability** - Design patterns guide future AI decisions
+✅ **Knowledge retention** - Documentation survives team transitions
 
 ---
 
 ## Quick Start
 
-### Option 1: Test the Methodology (Recommended First Step)
+### Option 1: Use in Your Project
+
+Install the CRC toolkit in your Claude Code project:
+
+```bash
+# Download the installer
+curl -O https://github.com/zot/claude-crc/releases/latest/download/claude-crc-dist.py
+
+# Run in your Claude Code project
+python3 claude-crc-dist.py
+```
+
+The installer will:
+- ✅ Verify you're in a Claude Code project
+- ✅ Check for file conflicts before installing
+- ✅ Install 20 framework files (agents, commands, skills, docs)
+- ✅ Automatically run project initialization
+
+Then start using it:
+```
+Ask Claude: "I want to make a contact app. Put specs in specs/"
+Ask Claude: "generate designs and test designs"
+Ask Claude: "generate code, tests, and docs"
+```
+
+### Option 2: Test the Methodology First
 
 1. **Clone this repository**
 2. **Open in Claude Code**
@@ -39,19 +72,7 @@ Level 3: Implementation (HOW - Code)
    Ask Claude: "Generate Level 2 specs for specs/main.md using designer agent"
    ```
 4. **Review generated artifacts** in the `design/` directory
-5. **Compare with `expected-result/`** (when available)
-
-### Option 2: Use in Your Project
-
-See [INSTALL.md](INSTALL.md) for complete installation instructions.
-
-Quick install:
-```bash
-cp -r .claude ~/your-project/.claude
-cd ~/your-project
-# In Claude Code, run:
-/init-crc-project
-```
+5. **Compare with `expected-result/`** to see what good designs look like
 
 ---
 
