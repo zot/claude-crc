@@ -14,7 +14,7 @@ From the late 80s through the early 2000s, I used [CRC cards](https://en.wikiped
 
 I realized with Claude as the developer I am now the customer. 😮
 
-OK, maybe it's not the same thing. As the lead developer on this project I want to know what Clude is going to do and why. Of course this is a bit of a fantasy given how LLMs work, but they're great at following plans. This is a way to ask Claude to make a plan that's easy to examine and that makes a ton of sense for developing software.
+OK, maybe it's not the same thing. As the lead developer on this project I want to know what Claude is going to do and why. Of course this is a bit of a fantasy given how LLMs work, but they're great at following plans. This is a way to ask Claude to make a plan that's easy to examine and that makes a ton of sense for developing software.
 
 ### Before And After
 
@@ -68,8 +68,7 @@ The files in layers 2 and 3 will contain comments linking them back to the layer
 
 ```bash
 # Download
-curl -O
-https://github.com/zot/claude-crc/releases/latest/download/claude-crc-dist.py
+curl -O https://github.com/zot/claude-crc/releases/latest/download/claude-crc-dist.py
 
 # Run
 python3 claude-crc-dist.py
