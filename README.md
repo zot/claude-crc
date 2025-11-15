@@ -27,12 +27,12 @@ Level 3: Implementation (HOW - Code)
 
 **Key Benefits:**
 
-✅ **Stop losing features** - Catch "generous" inferences before they become code
-✅ **Readable designs** - CRC cards show Claude's interpretation, not thousands of lines
-✅ **Complete traceability** - Every line of code traces back to requirements
-✅ **Bidirectional updates** - Change specs, design, or code and propagate safely
-✅ **Cross-session stability** - Design patterns guide future AI decisions
-✅ **Knowledge retention** - Documentation survives team transitions
+- ✅ **Stop losing features** - Catch "generous" inferences before they become code
+- ✅ **Readable designs** - CRC cards show Claude's interpretation, not thousands of lines
+- ✅ **Complete traceability** - Every line of code traces back to requirements
+- ✅ **Bidirectional updates** - Change specs, design, or code and propagate safely
+- ✅ **Cross-session stability** - Design patterns guide future AI decisions
+- ✅ **Knowledge retention** - Documentation survives team transitions
 
 ---
 
