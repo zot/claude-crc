@@ -102,7 +102,7 @@ Source file references have directory names:
    ↓
 9. CREATE UI specs (design/ui-*.md) referencing manifest-ui.md
    ↓
-10. CREATE design/architecture.md - Architecture mapping (systems & cross-cutting concerns)
+10. CREATE design/architecture.md - SIMPLE file index organizing design files into systems (30-100 lines)
    ↓
 11. UPDATE design/traceability.md (Level 1↔2, Level 2↔3 with checkboxes)
    ↓
@@ -712,13 +712,11 @@ Use simple box diagrams to show structure:
 
 ### Purpose
 
-**`design/architecture.md` serves as the "main program" for the design** - the entry point that shows how all design elements are organized into logical systems.
+**`design/architecture.md` is a SIMPLE INDEX/MAP** - it lists which design files belong to which systems.
 
-This file groups related design elements into cohesive systems and identifies cross-cutting concerns, making it easier to:
-- Understand the overall architecture at a glance
-- Navigate to related design elements
-- See which components span multiple systems
-- Maintain architectural coherence
+**This file is ONLY a navigation aid. The actual design content is in the CRC cards, sequences, and UI specs it references.**
+
+Think of it like a table of contents - it shows the organization but doesn't duplicate the content.
 
 ### Process
 
@@ -813,19 +811,36 @@ Some design elements don't belong to a single system - they support multiple sys
 
 ### Key Principles
 
-1. **Brevity** - Just systems, purposes, and file lists
+1. **Brevity** - Just systems, purposes, and file lists (typically 30-100 lines total)
 2. **Complete coverage** - Every design file listed exactly once
 3. **No duplicates** - Files in cross-cutting are NOT in any system
 4. **Clear grouping** - Related elements grouped together
 5. **Entry point** - This is where someone starts to understand the design
 
+### What NOT to Include
+
+**DO NOT include:**
+- ❌ Detailed component descriptions (that's in CRC cards)
+- ❌ Interaction flows (that's in sequence diagrams)
+- ❌ Implementation file paths (that's in traceability.md)
+- ❌ Diagnostic guides or troubleshooting tables
+- ❌ Change impact analysis or patterns
+- ❌ Design principles or maintenance guidelines
+- ❌ System interaction diagrams or ASCII art
+- ❌ Problem diagnosis guides
+- ❌ Review checklists
+- ❌ Quick reference tables
+- ❌ Any content that duplicates or expands on the design files
+
+**The design files contain the details. This file ONLY lists which files belong to which system.**
+
 ### Output
 - `design/architecture.md` created
 - All design elements organized into systems or cross-cutting
-- Clear architectural overview
-- Navigation aid for the design
+- SIMPLE file listing (not comprehensive documentation)
+- Navigation aid ONLY - details are in the referenced files
 
-**Note:** This file is invaluable for problem diagnosis - use it as your entry point when troubleshooting issues to quickly localize problems, assess impact scope, and identify coupling issues. See `.claude/doc/crc.md` for full diagnostic benefits.
+**Note:** While architecture.md is just a simple index, it's invaluable for problem diagnosis (see `.claude/doc/crc.md` "Diagnostic Benefits" section). Users leverage this index to quickly localize problems, assess impact scope, and identify coupling issues - but the index itself remains brief.
 
 ## Part 4: Traceability Update
 
@@ -1009,12 +1024,14 @@ Before completing work, verify:
 
 **Architecture Mapping:**
 - [ ] `design/architecture.md` created
+- [ ] File is 30-100 lines (SIMPLE INDEX, not comprehensive documentation)
 - [ ] All design files organized into logical systems
 - [ ] Cross-cutting concerns identified separately
 - [ ] Every design file appears exactly once
 - [ ] No files missing from architecture
-- [ ] Brief system purposes documented
-- [ ] File serves as clear entry point to design
+- [ ] Brief system purposes documented (one line each)
+- [ ] File contains ONLY system names, purposes, and file lists
+- [ ] NO detailed descriptions, flows, diagrams, or diagnostic guides included
 
 **Traceability:**
 - [ ] Level 1 ↔ Level 2 section complete
