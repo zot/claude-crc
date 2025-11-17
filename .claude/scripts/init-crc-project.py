@@ -123,6 +123,9 @@ Level 3: Implementation (source code)
 - Start here to understand the overall architecture
 - **Use for problem diagnosis and impact analysis** - quickly localize issues and assess change scope
 
+**When to Read architecture.md:**
+- **When working with design files, implementing features, or diagnosing issues, always read `design/architecture.md` first to understand the system structure and component relationships.**
+
 **Traceability Comment Format:**
 - Use simple filenames WITHOUT directory paths
 - ✅ Correct: `CRC: crc-Person.md`, `Spec: main.md`, `Sequence: seq-create-user.md`
