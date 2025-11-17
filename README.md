@@ -18,6 +18,7 @@ CRC (Class-Responsibility-Collaboration) Modeling adds a middle layer where you 
 Level 1: Human Specs (WHAT & WHY)
     ↓
 Level 2: Design Models (HOW - Architecture)
+  ├─ Architecture Map: Global understanding of systems and structure
   ├─ CRC Cards: Classes, responsibilities, collaborators
   ├─ Sequence Diagrams: Object interactions over time
   └─ UI Specs: Layout structure, data bindings, events
@@ -133,6 +134,7 @@ Task(subagent_type="designer",
 ```
 
 This creates:
+- `design/architecture.md` - **Entry point**: Systems map and global understanding
 - `design/crc-*.md` - CRC cards for all classes
 - `design/seq-*.md` - Sequence diagrams for all scenarios
 - `design/ui-*.md` - UI layout specifications
@@ -141,6 +143,7 @@ This creates:
 
 ### 3. Review and Refine
 
+- Start with architecture map (does the system organization make sense?)
 - Review generated CRC cards (do they match your intent?)
 - Check sequence diagrams (correct interactions?)
 - Validate UI specs (proper layout and behavior?)
@@ -162,6 +165,14 @@ Implement tests following the generated test designs in `design/test-*.md`.
 ---
 
 ## Key Concepts
+
+### Architecture Map
+
+Provides global understanding of the design:
+- **Entry point**: Start here to understand the overall structure
+- **Systems**: Groups related components into logical systems
+- **Cross-cutting**: Identifies infrastructure and shared concerns
+- **Diagnostics**: Quickly localize problems and assess change impact
 
 ### CRC Cards
 
