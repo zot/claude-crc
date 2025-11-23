@@ -1,6 +1,6 @@
 # Project Instructions
 
-**Version:** 1.1.2
+**Version:** 1.1.3
 
 ## CRC Modeling Workflow
 
