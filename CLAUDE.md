@@ -1,6 +1,6 @@
 # Project Instructions
 
-**Version:** 1.1.3
+**Version:** 1.2.0
 
 ## CRC Modeling Workflow
 
@@ -66,6 +66,15 @@ See `.claude/doc/crc.md` for complete documentation.
 - Changed interactions → Update sequence diagrams
 - Template/view changes → Update UI specs
 
+**Use the `design-maintainer` agent to automate this:**
+```
+When you've made code changes, invoke the design-maintainer agent to:
+- Update CRC cards with new methods/fields
+- Update sequence diagrams for changed workflows
+- Add traceability comments to new code
+- Check off traceability.md checkboxes
+```
+
 **Design Spec Changes → Architectural Specs:**
 - Modified CRC cards/sequences → Update high-level specs if requirements/architecture affected
 - New components → Document in feature specs and update `design/architecture.md`
@@ -77,6 +86,11 @@ See `.claude/doc/crc.md` for complete documentation.
 2. **Maintain abstraction**: Each level documents at its appropriate abstraction
 3. **Keep consistency**: All three tiers must tell the same story at their respective levels
 4. **Update traceability comments**: When docs change, update CRC/spec references in code comments
+
+**Agent Workflow:**
+- **Requirements → Design**: Use `designer` agent (Level 1 → Level 2)
+- **Code → Design**: Use `design-maintainer` agent (Level 3 → Level 2)
+- **Design → Documentation**: Use `documenter` agent (Level 2 → Docs)
 
 ### 📚 Documentation Generation
 

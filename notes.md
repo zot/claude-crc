@@ -1,3 +1,10 @@
+Make a progress-report blog post about this
+- the need to strengthen the requirement for test-design generation
+- the value of both HollowWorld and p2p-webapp using claude-crc for their design process
+
+
+
+
 diagnostic guidelines: use architecture.md to check related design elements when diagnosing a problem
 
 
