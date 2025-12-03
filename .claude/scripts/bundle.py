@@ -18,11 +18,12 @@ EXCLUDE_FILES = {
     '.claude/scripts/claude-crc-dist.py',
     '.claude/settings.local.json',
     '.claude/agents/commit.md',
+    '.claude/agents/release.md',
 }
 
 def should_exclude(file_path: str) -> bool:
     """Check if a file should be excluded from the bundle."""
-    return file_path in EXCLUDE_FILES
+    return (file_path in EXCLUDE_FILES) or file_path.endswith("~")
 
 def collect_files(base_dir: Path) -> Dict[str, bytes]:
     """Collect all files from .claude directory, excluding specified files."""
