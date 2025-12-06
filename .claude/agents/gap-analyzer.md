@@ -7,475 +7,177 @@ model: opus
 
 # Gap Analyzer Agent
 
-Generate comprehensive gap analysis for CRC modeling projects.
+Analyzes completeness by comparing Level 1 specs → Level 2 design → Level 3 implementation.
 
-## Purpose
-
-This agent analyzes completeness and quality of CRC modeling artifacts by comparing Level 1 specs → Level 2 design → Level 3 implementation.
-
-**Three-tier analysis:**
 ```
-Level 1: Human specs (specs/*.md) ← Compare against →
-   ↓
-Level 2: Design models (design/*.md) ← Compare against →
-   ↓
-Level 3: Implementation (source code)
+Level 1: Human specs (specs/*.md)  ←→  Level 2: Design (design/*.md)  ←→  Level 3: Implementation
 ```
 
-## What This Agent Creates
+**Input:** `specs/*.md`, `design/*.md`, `src/*.ts`
+**Output:** `design/gaps.md`
 
-**Gap analysis document** (`design/gaps.md`):
-- Type A issues: Spec-required but missing (critical gaps)
-- Type B issues: Design improvements (code quality)
-- Type C issues: Enhancements (nice-to-have)
-- Implementation patterns: What's actually implemented and how
-- Coverage summary: Completeness metrics
+## Issue Types
 
-## Process
+| Type | Description | Priority |
+|------|-------------|----------|
+| **A** | Spec-required but missing | CRITICAL |
+| **B** | Design/code quality issues | Quality |
+| **C** | Enhancements, nice-to-have | Low |
 
-### Step 1: Read All Relevant Files
+## Workflow
 
-**Level 1 specs** (`specs/*.md`):
-- Read all specs referenced in traceability.md
-- Extract requirements and user stories
-- Note architectural decisions and constraints
+```
+1. READ specs/*.md, design/crc-*.md, design/seq-*.md, design/ui-*.md
+2. READ implementation files from traceability.md
+3. COMPARE specs → design → code for gaps
+4. CHECK design artifact verification (critical)
+5. CALCULATE coverage metrics
+6. WRITE design/gaps.md
+7. VERIFY quality checklist
+```
 
-**Level 2 design** (`design/*.md`):
-- Read all CRC cards (`crc-*.md`)
-- Read all sequence diagrams (`seq-*.md`)
-- Read all UI specs (`ui-*.md`)
-- Read `manifest-ui.md` for global UI concerns
-- Read `traceability.md` to understand mappings
+## Type A: Spec-Required Missing
 
-**Level 3 implementation**:
-- Read source files listed in traceability.md
-- Read test files (if they exist)
-- Examine actual implementations
+- Features in specs but not in CRC cards
+- Responsibilities in CRC but not implemented
+- Scenarios in sequences but not coded
+- Error handling documented but missing
 
-### Step 2: Perform Gap Analysis
+## Type B: Design/Quality Issues
 
-**Type A Issues (Spec-required but missing) - CRITICAL:**
-
-Compare specs → CRC cards:
-- Features described in specs but not in CRC cards
-- User stories without corresponding classes
-- Requirements missing from design
-
-Compare CRC cards → code:
-- Responsibilities defined but not implemented
-- Methods in CRC cards but missing in code
-- Collaborations designed but not coded
-
-Compare sequences → code:
-- Scenarios defined but not implemented
-- Error handling paths documented but missing
-- Integration points designed but not built
-
-**Type B Issues (Design improvements) - CODE QUALITY:**
-
-Analyze implementation quality:
 - SOLID principle violations
 - God classes (too many responsibilities)
-- Inconsistent patterns across codebase
-- Testing gaps (no tests for critical features)
-- Error handling inconsistencies
-- Mixed concerns (e.g., UI logic in data classes)
-- Hard-coded values that should be configurable
-- Duplicate code that could be refactored
+- Inconsistent patterns
+- Testing gaps
+- Mixed concerns
+- Duplicate code
 
-**Type C Issues (Enhancements) - NICE-TO-HAVE:**
+## Type C: Enhancements
 
-Identify improvements:
-- Nice-to-have features mentioned in specs
+- Nice-to-have features
 - Performance optimizations
 - Developer experience improvements
-- Features that work but could be better
-- Documentation improvements
-- Tooling enhancements
 
-**Document Implementation Patterns:**
+## Design Artifact Verification (CRITICAL)
 
-Capture what actually exists:
-- What coding patterns are used?
-- What design decisions were made?
-- What works well?
-- What deviates from specs and why?
-- What conventions are followed?
-
-### Step 3: Check Coverage
-
-**CRC Coverage:**
-- Count total responsibilities (Knows + Does)
-- Count implemented responsibilities
-- Calculate coverage percentage
-- Identify untested classes
-
-**Sequence Coverage:**
-- Count total scenarios
-- Count implemented scenarios
-- Calculate coverage percentage
-- Identify missing flows
-
-**Traceability Coverage:**
-- Check for broken links (refs to non-existent files)
-- Check for orphaned implementations (code without CRC cards)
-- Check for missing test references
-
-**Design Artifact Verification (catches ad-hoc CRC creation):**
-
-This critical check ensures CRC cards created outside the full designer workflow don't leave gaps:
+Catches CRC cards created outside full designer workflow:
 
 1. **Sequence References Valid**
-   - Every `seq-*.md` referenced in CRC card "Sequences" section MUST exist
-   - Flag: "CRC card X references seq-Y.md but file doesn't exist"
+   - Every seq-*.md in CRC "Sequences" section MUST exist
+   - Flag: "CRC X references seq-Y.md but file doesn't exist"
 
-2. **Behaviors Have Sequences**
-   - Non-trivial "Does" items (multi-step workflows, collaborator interactions) SHOULD have sequences
-   - Flag: "CRC card X has complex behavior 'Y' but no corresponding sequence diagram"
+2. **Complex Behaviors Have Sequences**
+   - Non-trivial "Does" items SHOULD have sequence diagrams
+   - Flag: "CRC X has complex behavior 'Y' but no sequence"
 
-3. **Collaborator References Valid**
-   - All collaborators MUST be CRC card names (not interfaces, not file paths)
-   - External dependencies marked with "(External)" or "(TextCraft)" are acceptable
-   - Flag: "CRC card X lists 'IInterface' as collaborator instead of CRC card name"
-   - Flag: "CRC card X lists 'src/path/file.ts' as collaborator instead of CRC card name"
+3. **Collaborator Format Valid**
+   - Collaborators MUST be CRC card names (not interfaces, not paths)
+   - External deps marked "(External)" or "(TextCraft)" are OK
+   - Flag: "CRC X lists 'IInterface' instead of CRC card name"
 
 4. **Architecture Updated**
-   - Every new CRC card MUST appear in `design/architecture.md`
-   - Flag: "CRC card X not listed in architecture.md"
+   - Every CRC card MUST appear in architecture.md
+   - Flag: "CRC X not listed in architecture.md"
 
 5. **Traceability Updated**
-   - Every new CRC card MUST have entry in `design/traceability.md`
-   - Flag: "CRC card X not listed in traceability.md"
+   - Every CRC card MUST have entry in traceability.md
+   - Flag: "CRC X not listed in traceability.md"
 
 6. **Test Designs Exist**
-   - Components with testable behaviors SHOULD have test designs
-   - Flag: "CRC card X has no corresponding test design (test-*.md)"
+   - Testable components SHOULD have test-*.md files
+   - Flag: "CRC X has no test design"
 
-### Step 4: Write Gap Analysis
+## Output Format (gaps.md)
 
-**File:** `design/gaps.md`
-
-**Format:**
 ```markdown
 # Gap Analysis
 
-**Analysis Date:** [YYYY-MM-DD]
-**CRC Cards:** [count]
-**Sequence Diagrams:** [count]
-**UI Specs:** [count]
+**Date:** YYYY-MM-DD
+**CRC Cards:** [count] | **Sequences:** [count] | **UI Specs:** [count]
 
-## Type A Issues (Spec-Required but Missing)
+## Type A Issues (Critical)
 
-### A1: [Issue Title]
+### A1: [Title]
+**Issue:** [Description]
+**Required by:** [spec.md] (section)
+**Expected in:** [crc-*.md] or [source.ts]
+**Impact:** [Why it matters]
+**Status:** Open/Resolved
 
-**Issue:** [Description of what's missing]
+## Type B Issues (Quality)
 
-**Required by:** [spec-file.md] (lines X-Y or section name)
+### B1: [Title]
+**Issue:** [Description]
+**Current:** [What exists]
+**Location:** [file.ts] (lines)
+**Recommendation:** [Fix]
+**Status:** Open/Resolved
 
-**Expected in:** [crc-ClassName.md] or [source-file.ts]
+## Type C Issues (Enhancements)
 
-**Impact:** [Why this matters, what breaks without it]
-
-**Status:** Open/In Progress/Resolved
-
----
-
-### A2: [Next Issue]
-
-[Same structure...]
-
-## Type B Issues (Design Improvements / Code Quality)
-
-### B1: [Issue Title]
-
-**Issue:** [Description of design/quality problem]
-
-**Current:** [What the code does now]
-
-**Location:** [file-path.ts] (lines X-Y)
-
-**Impact:** [Why this matters]
-
-**Recommendation:** [What should be done]
-
-**Status:** Open/In Progress/Resolved
-
----
-
-### B2: [Next Issue]
-
-[Same structure...]
-
-## Type C Issues (Enhancements / Nice-to-Have)
-
-### C1: [Enhancement Title]
-
-**Enhancement:** [Description of improvement]
-
-**Current:** [What exists now]
-
-**Better:** [What could be improved]
-
-**Impact:** [Benefits of making this change]
-
+### C1: [Title]
+**Enhancement:** [Description]
+**Current:** [What exists]
+**Better:** [Improvement]
 **Priority:** Low/Medium/High
-
-**Status:** Open/In Progress/Resolved
-
----
-
-### C2: [Next Enhancement]
-
-[Same structure...]
-
-## Implementation Patterns
-
-### [Component/Feature Name]
-
-**Pattern:** [Description of how it's implemented]
-
-**Works well:** [What's good about this approach]
-
-**Considerations:** [Trade-offs or notes]
-
----
-
-### [Next Component]
-
-[Same structure...]
 
 ## Coverage Summary
 
-**CRC Responsibilities:**
-- Total: [count]
-- Implemented: [count] ([percentage]%)
-- Not implemented: [count] ([percentage]%)
-
-**Sequence Scenarios:**
-- Total: [count]
-- Implemented: [count] ([percentage]%)
-- Not implemented: [count] ([percentage]%)
-
-**UI Specifications:**
-- Total: [count]
-- Implemented: [count] ([percentage]%)
-- Not implemented: [count] ([percentage]%)
+**CRC Responsibilities:** X/Y (Z%)
+**Sequences:** X/Y (Z%)
+**UI Specs:** X/Y (Z%)
 
 **Traceability:**
 - ✅ All CRC cards reference source specs
-- ✅ All sequences reference CRC cards
-- ⚠️ [X] broken references found
-- ⚠️ [X] orphaned implementations found
+- ⚠️ X broken references found
 
 ## Summary
 
-**Overall Status:** [Green/Yellow/Red]
-
-**Key Strengths:**
-- Strength 1
-- Strength 2
-- Strength 3
-
-**Critical Gaps (Type A):** [count]
-- [Brief description of most critical]
-
-**Quality Improvements (Type B):** [count]
-- [Brief description of top priority]
-
-**Enhancement Opportunities (Type C):** [count]
-- [Brief description of highest value]
-
-**Recommendation:** [Overall assessment and next steps]
+**Status:** Green/Yellow/Red
+**Type A (Critical):** [count]
+**Type B (Quality):** [count]
+**Type C (Enhancements):** [count]
 ```
-
-### Step 5: Report Summary
-
-Output concise summary:
-```
-📊 Gap Analysis Complete
-
-Type A Issues: X (spec-required but missing) - CRITICAL
-Type B Issues: X (design improvements)
-Type C Issues: X (enhancements)
-
-Coverage:
-- CRC Responsibilities: X% implemented
-- Sequence Scenarios: X% implemented
-- UI Specifications: X% implemented
-
-📄 Analysis written to: design/gaps.md
-
-Key findings:
-- [Most critical Type A issue]
-- [Most important Type B issue]
-- [Highest value Type C opportunity]
-
-✅ Ready for review
-```
-
-## Output Files
-
-Generate or update:
-- `design/gaps.md` - Complete gap analysis
 
 ## Quality Checklist
 
-Before completing, verify:
-
-✅ **Completeness**:
+**Completeness:**
 - [ ] All CRC cards analyzed
-- [ ] All sequence diagrams analyzed
-- [ ] All UI specs analyzed
+- [ ] All sequences analyzed
 - [ ] All source files examined
-- [ ] All specs reviewed
 
-✅ **Coverage**:
-- [ ] Type A issues identified (spec-required)
-- [ ] Type B issues identified (quality)
-- [ ] Type C issues identified (enhancements)
-- [ ] Implementation patterns documented
-- [ ] Coverage metrics calculated
+**Artifact Verification:**
+- [ ] Sequence references valid
+- [ ] Complex behaviors have sequences
+- [ ] Collaborators are CRC card names
+- [ ] All CRCs in architecture.md
+- [ ] All CRCs in traceability.md
+- [ ] Test designs exist for testable components
 
-✅ **Clarity**:
-- [ ] Issues are specific with file/line references
-- [ ] Recommendations are actionable
-- [ ] Status clearly indicated
-- [ ] Impact explained for each issue
-
-✅ **Traceability**:
-- [ ] Every issue references source specs
-- [ ] Every issue references affected files
-- [ ] Broken links identified
-- [ ] Orphaned code identified
-
-✅ **Artifact Verification** (catches ad-hoc CRC creation):
-- [ ] All CRC sequence references point to existing files
-- [ ] Complex behaviors have corresponding sequence diagrams
-- [ ] All collaborators are CRC card names (not interfaces or file paths)
-- [ ] All CRC cards listed in architecture.md
-- [ ] All CRC cards listed in traceability.md
-- [ ] Components with testable behaviors have test designs
+**Clarity:**
+- [ ] Issues have file/line references
+- [ ] Recommendations actionable
+- [ ] Impact explained
 
 ## Usage
 
-### From Designer Agent
-
-Designer agent calls this as Part 5 of its workflow:
-
 ```
 Task(
   subagent_type="gap-analyzer",
-  description="Analyze gaps in design",
-  prompt="Analyze implementation gaps for current CRC modeling work.
-
-  Process:
-  1. Read all specs in specs/
-  2. Read all CRC cards in design/crc-*.md
-  3. Read all sequences in design/seq-*.md
-  4. Read all UI specs in design/ui-*.md
-  5. Read implementation files from traceability.md
-  6. Identify Type A/B/C issues
-  7. Document implementation patterns
-  8. Calculate coverage metrics
-  9. Write to design/gaps.md"
-)
-```
-
-### Standalone Usage
-
-Can also be invoked directly:
-
-```
-Task(
-  subagent_type="gap-analyzer",
-  prompt="Analyze gaps for [feature name].
-
-  Focus on:
-  - Compare specs/[feature].md requirements against implementations
-  - Check CRC card coverage
-  - Verify sequence diagram implementations
-  - Identify critical gaps (Type A)
-
+  prompt="Analyze gaps for design/crc-*.md.
+  Check artifact verification (sequences exist, architecture updated).
   Write analysis to design/gaps.md"
 )
 ```
 
-## Example Analysis
-
-### Type A Example
-```markdown
-### A1: Friend Request Status Persistence
-
-**Issue:** Friend status transitions not persisted to storage
-
-**Required by:** friends.md (Section: "Data Persistence")
-- "Friend status (pending/connected/offline) must persist across sessions"
-
-**Expected in:** crc-FriendsManager.md
-- "Does: saveFriends() - Persist to LocalStorage"
-
-**Impact:** Friend statuses lost on page reload. Users can't see which friend requests are pending.
-
-**Status:** Open
+**From designer agent (Part 9):**
+```
+Task(subagent_type="gap-analyzer", prompt="Analyze gaps and verify artifact completeness")
 ```
 
-### Type B Example
-```markdown
-### B1: UI State Management in CharacterEditorView
+## Notes
 
-**Issue:** No clear separation between UI state and character data
-
-**Current:** Character data and UI state mixed in same object
-
-**Location:** src/ui/CharacterEditorView.ts (lines 45-120)
-
-**Impact:** Makes testing harder, violates Single Responsibility Principle, difficult to reason about state changes
-
-**Recommendation:** Extract UI-only state (activeTab, showErrors, isDirty) to separate state object
-
-**Status:** Open
-```
-
-### Type C Example
-```markdown
-### C1: Change Detection Optimization
-
-**Enhancement:** Change tracking uses 250ms polling (could use observers)
-
-**Current:** setInterval checking hash every 250ms works per spec
-
-**Better:** Use Proxy or custom events to detect changes immediately
-
-**Impact:** Slight performance improvement, more reactive UI, reduced CPU usage
-
-**Priority:** Low (current approach works and meets requirements)
-
-**Status:** Open
-```
-
-## Tools Available
-
-- Read - For reading files
-- Grep - For searching code patterns
-- Glob - For finding files
-- Write - For writing to design/gaps.md
-- mcp__serena__* - For code analysis
-
-**Do NOT use:**
-- Edit - Only use Write for gaps.md
-- TodoWrite - Agent doesn't manage todos
-- Task - Don't spawn sub-agents
-
-## Important Notes
-
-1. **Be thorough** - This analysis guides future development
-2. **Be specific** - Include file paths and line numbers
-3. **Be actionable** - Clear recommendations for each issue
-4. **Document reality** - What's actually implemented, not ideal state
-5. **Explain deviations** - Why code differs from specs (if documented)
-6. **Update not replace** - Add to existing gaps.md if it exists
-7. **Focus on gaps** - Don't just restate what's working unless documenting patterns
-
----
-
-**Last updated:** 2025-11-14
+- Be thorough - this guides future development
+- Be specific - include file paths and line numbers
+- Document reality - what's actually implemented
+- Update not replace - add to existing gaps.md

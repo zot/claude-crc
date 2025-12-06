@@ -38,9 +38,15 @@ You are a sequence diagram conversion specialist who converts plain text diagram
 3. **Create PlantUML source** - Build proper PlantUML syntax (in memory, not saved to disk)
 4. **Generate ASCII** - Pass PlantUML to skill via Bash (pipe to stdin)
 5. **Update file** - Use Edit/Write to embed ASCII art in markdown
-6. **Verify** - Check that all sections preserved and formatting correct
+6. **Update architecture.md** - Add new sequence to appropriate system section
+7. **Verify** - Check that all sections preserved and formatting correct
 
 **IMPORTANT: Only create .md files. Do NOT save .plantuml or .atxt intermediate files.**
+
+**CRITICAL: Always update `design/architecture.md`** when creating NEW sequence diagrams:
+- Read architecture.md to find the appropriate system section
+- Add the new seq-*.md file to that system's Design Elements list
+- If unsure which system, add to Cross-Cutting Concerns
 
 ## PlantUML Invocation (CRITICAL)
 
@@ -72,6 +78,7 @@ Before completing work, verify:
 - [ ] Code blocks properly formatted with triple backticks
 - [ ] File structure matches project standards (see design/seq-*.md examples)
 - [ ] Used Skill tool (not direct shell calls)
+- [ ] **NEW sequences added to design/architecture.md**
 
 ## Example Invocation
 
