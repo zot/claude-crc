@@ -121,6 +121,36 @@ Capture what actually exists:
 - Check for orphaned implementations (code without CRC cards)
 - Check for missing test references
 
+**Design Artifact Verification (catches ad-hoc CRC creation):**
+
+This critical check ensures CRC cards created outside the full designer workflow don't leave gaps:
+
+1. **Sequence References Valid**
+   - Every `seq-*.md` referenced in CRC card "Sequences" section MUST exist
+   - Flag: "CRC card X references seq-Y.md but file doesn't exist"
+
+2. **Behaviors Have Sequences**
+   - Non-trivial "Does" items (multi-step workflows, collaborator interactions) SHOULD have sequences
+   - Flag: "CRC card X has complex behavior 'Y' but no corresponding sequence diagram"
+
+3. **Collaborator References Valid**
+   - All collaborators MUST be CRC card names (not interfaces, not file paths)
+   - External dependencies marked with "(External)" or "(TextCraft)" are acceptable
+   - Flag: "CRC card X lists 'IInterface' as collaborator instead of CRC card name"
+   - Flag: "CRC card X lists 'src/path/file.ts' as collaborator instead of CRC card name"
+
+4. **Architecture Updated**
+   - Every new CRC card MUST appear in `design/architecture.md`
+   - Flag: "CRC card X not listed in architecture.md"
+
+5. **Traceability Updated**
+   - Every new CRC card MUST have entry in `design/traceability.md`
+   - Flag: "CRC card X not listed in traceability.md"
+
+6. **Test Designs Exist**
+   - Components with testable behaviors SHOULD have test designs
+   - Flag: "CRC card X has no corresponding test design (test-*.md)"
+
 ### Step 4: Write Gap Analysis
 
 **File:** `design/gaps.md`
@@ -317,6 +347,14 @@ Before completing, verify:
 - [ ] Every issue references affected files
 - [ ] Broken links identified
 - [ ] Orphaned code identified
+
+✅ **Artifact Verification** (catches ad-hoc CRC creation):
+- [ ] All CRC sequence references point to existing files
+- [ ] Complex behaviors have corresponding sequence diagrams
+- [ ] All collaborators are CRC card names (not interfaces or file paths)
+- [ ] All CRC cards listed in architecture.md
+- [ ] All CRC cards listed in traceability.md
+- [ ] Components with testable behaviors have test designs
 
 ## Usage
 

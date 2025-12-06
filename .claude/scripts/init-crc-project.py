@@ -120,6 +120,22 @@ Level 3: Implementation (source code)
    - Verify test design files (`design/test-*.md`) are created before proceeding
 3. Generate code following complete specification with traceability comments
 
+**When Designer Agent is Required vs Direct CRC Creation:**
+
+| Scenario | Use Designer Agent? | Required Follow-up |
+|----------|---------------------|-------------------|
+| New feature design | YES | Full workflow (sequences, test designs, gap analysis) |
+| Significant architectural change | YES | Full workflow |
+| Documenting existing code | Optional | Run gap-analyzer to verify completeness |
+| Fixing/cleaning up CRC cards | No | Verify sequence references exist |
+| Creating CRC for existing interface | Optional | Run gap-analyzer to verify completeness |
+
+**CRITICAL: Regardless of how CRC cards are created:**
+1. All sequence references must point to existing files (fix or create)
+2. Non-trivial "Does" behaviors need sequence diagrams
+3. Run `gap-analyzer` agent after creating/modifying CRC cards
+4. Update `design/traceability.md` and `design/architecture.md`
+
 **Design Entry Point:**
 - `design/architecture.md` serves as the "main program" for the design
 - Shows how design elements are organized into logical systems

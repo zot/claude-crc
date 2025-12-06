@@ -110,9 +110,11 @@ Source file references have directory names:
    ↓
 13. VERIFY test design files created (design/test-*.md exist)
    ↓
-14. RUN gap-analyzer agent for comprehensive analysis
+14. **MUST RUN gap-analyzer agent** - verifies artifact completeness (MANDATORY)
    ↓
-15. REVIEW quality checklist (including test design validation)
+15. **ADDRESS gap-analyzer issues** - fix broken refs, missing sequences, invalid collaborators
+   ↓
+16. REVIEW quality checklist (including test design validation)
 ```
 
 ## Part 1: CRC Card Creation
