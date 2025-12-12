@@ -1,6 +1,6 @@
 # Project Instructions
 
-**Version:** 1.5.0
+**Version:** 1.5.1
 
 ## CRC Modeling Workflow
 
@@ -21,6 +21,22 @@ Level 3: Implementation (source code)
    - Designer agent MUST invoke test-designer sub-agent (automatic, mandatory step)
    - Verify test design files (`design/test-*.md`) are created before proceeding
 3. Generate code following complete specification with traceability comments
+
+**When Designer Agent is Required vs Direct CRC Creation:**
+
+| Scenario | Use Designer Agent? | Required Follow-up |
+|----------|---------------------|-------------------|
+| New feature design | YES | Full workflow (sequences, test designs, gap analysis) |
+| Significant architectural change | YES | Full workflow |
+| Documenting existing code | Optional | Run gap-analyzer to verify completeness |
+| Fixing/cleaning up CRC cards | No | Verify sequence references exist |
+| Creating CRC for existing interface | Optional | Run gap-analyzer to verify completeness |
+
+**CRITICAL: Regardless of how CRC cards are created:**
+1. All sequence references must point to existing files (fix or create)
+2. Non-trivial "Does" behaviors need sequence diagrams
+3. Run `gap-analyzer` agent after creating/modifying CRC cards
+4. Update `design/traceability.md` and `design/architecture.md`
 
 **Design Entry Point:**
 - `design/architecture.md` serves as the "main program" for the design
@@ -94,6 +110,26 @@ When you've made code changes, invoke the design-maintainer agent to:
 - **Requirements → Design**: Use `designer` agent (Level 1 → Level 2)
 - **Code → Design**: Use `design-maintainer` agent (Level 3 → Level 2)
 - **Design → Documentation**: Use `documenter` agent (Level 2 → Docs)
+
+### 🔧 Design Update Requests
+
+**When the user asks to update, modify, or add to the design (Level 2 artifacts), ALWAYS use the appropriate agent:**
+
+| User Request | Agent to Use |
+|--------------|--------------|
+| "Update the design for X" | `designer` |
+| "Add X to the design" | `designer` |
+| "Reflect spec changes in design" | `designer` |
+| "Update CRC cards / sequences" | `designer` |
+| "Update design based on these changes" | `designer` |
+| "Update design after code changes" | `design-maintainer` |
+| "Run gap analysis" | `gap-analyzer` |
+| "Generate/update documentation" | `documenter` |
+
+**Do NOT manually edit design files** unless it's a trivial fix (typo, formatting). Always delegate to the appropriate agent to ensure:
+- Consistency across CRC cards, sequences, and architecture
+- Proper traceability updates
+- Test design updates when needed
 
 ### 📚 Documentation Generation
 
