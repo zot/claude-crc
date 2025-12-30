@@ -1,300 +1,150 @@
 # Test Design: ContactValidator
 
-**Source Specs**: main.md (FR2: Create Contact - Validation, FR4: View/Edit Contact - Validation)
-**CRC Cards**: crc-ContactValidator.md
-**Sequences**: seq-create-contact.md, seq-edit-contact.md
+**Source CRC:** crc-ContactValidator.md
+**Source Spec:** main.md (FR2, FR4)
 
-## Overview
+## Purpose
 
-Test suite for ContactValidator covering field validation rules and error messages.
+Test validation logic for all Contact fields.
 
 ## Test Cases
 
-### Test: Validate valid name
+### TC-1: Valid Name
 
-**Purpose**: Verify that names within the 1-100 character range pass validation.
+**Purpose:** Verify valid names pass validation
 
-**Motivation**: Core validation requirement. Ensures valid data is accepted.
+**Setup:** ContactValidator instance
 
-**Input**:
-- name: "John Doe" (8 characters)
-- name: "A" (1 character, minimum)
-- name: "a" * 100 (100 characters, maximum)
+**Input:** Names within 1-100 characters
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateName()"
-- Spec: main.md FR1 - "Name (required, 1-100 characters)"
+**Expected Result:** isValid returns true, no errors
 
-**Expected Results**:
-- validateName() returns ValidationResult with isValid === true
-- errors Map is empty
+### TC-2: Empty Name
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateName()"
+**Purpose:** Verify empty name fails validation
 
----
+**Setup:** ContactValidator instance
 
-### Test: Validate invalid name - too short
+**Input:** Empty string ""
 
-**Purpose**: Verify that empty names are rejected.
+**Expected Result:** isValid returns false, error "Name is required"
 
-**Motivation**: Name is required field. Prevents data corruption.
+### TC-3: Name Too Long
 
-**Input**:
-- name: "" (empty string)
+**Purpose:** Verify name exceeding 100 characters fails
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateName()"
-- Spec: main.md FR2 - "Name is required"
+**Setup:** ContactValidator instance
 
-**Expected Results**:
-- validateName() returns ValidationResult with isValid === false
-- errors Map contains: "name" → "Name is required (1-100 characters)"
+**Input:** String with 101 characters
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateName()"
-- Spec: main.md NFR2 - "Error messages shall be clear and actionable"
+**Expected Result:** isValid returns false, error "Name must be 100 characters or less"
 
----
+### TC-4: Valid Email
 
-### Test: Validate invalid name - too long
+**Purpose:** Verify valid email formats pass
 
-**Purpose**: Verify that names exceeding 100 characters are rejected.
+**Setup:** ContactValidator instance
 
-**Motivation**: Enforces field constraints. Prevents UI layout issues.
+**Input:** "user@example.com", "name.last@domain.org"
 
-**Input**:
-- name: "a" * 101 (101 characters)
+**Expected Result:** isValid returns true, no errors
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateName()"
-- Spec: main.md FR1 - "Name (required, 1-100 characters)"
+### TC-5: Invalid Email Format
 
-**Expected Results**:
-- validateName() returns ValidationResult with isValid === false
-- errors Map contains: "name" → "Name is required (1-100 characters)"
+**Purpose:** Verify invalid email formats fail
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateName()"
+**Setup:** ContactValidator instance
 
----
+**Input:** "notanemail", "@nodomain", "no@.com"
 
-### Test: Validate valid email
+**Expected Result:** isValid returns false, error "Invalid email format"
 
-**Purpose**: Verify that properly formatted email addresses pass validation.
+### TC-6: Empty Email (Optional)
 
-**Motivation**: Ensures email field accepts standard email formats.
+**Purpose:** Verify empty email passes (optional field)
 
-**Input**:
-- email: "john@example.com"
-- email: "user+tag@domain.co.uk"
-- email: undefined (optional field)
+**Setup:** ContactValidator instance
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateEmail()"
-- Spec: main.md FR1 - "Email address (optional, valid email format)"
+**Input:** undefined or ""
 
-**Expected Results**:
-- validateEmail() returns ValidationResult with isValid === true
-- errors Map is empty
-- undefined email is considered valid (optional field)
+**Expected Result:** isValid returns true, no errors
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateEmail()"
+### TC-7: Valid Phone
 
----
+**Purpose:** Verify valid phone numbers pass
 
-### Test: Validate invalid email
+**Setup:** ContactValidator instance
 
-**Purpose**: Verify that malformed email addresses are rejected.
+**Input:** "1234567890" (10 chars), "12345678901234567890" (20 chars)
 
-**Motivation**: Prevents invalid email data. Ensures users can be contacted.
+**Expected Result:** isValid returns true, no errors
 
-**Input**:
-- email: "not-an-email"
-- email: "missing-at-sign.com"
-- email: "@no-local-part.com"
+### TC-8: Phone Too Short
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateEmail()"
-- Spec: main.md FR2 - "Email must be valid format if provided"
+**Purpose:** Verify phone under 10 characters fails
 
-**Expected Results**:
-- validateEmail() returns ValidationResult with isValid === false
-- errors Map contains: "email" → "Invalid email format"
+**Setup:** ContactValidator instance
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateEmail()"
+**Input:** "123456789" (9 chars)
 
----
+**Expected Result:** isValid returns false, error "Phone must be 10-20 characters"
 
-### Test: Validate valid phone
+### TC-9: Phone Too Long
 
-**Purpose**: Verify that phone numbers within 10-20 characters pass validation.
+**Purpose:** Verify phone over 20 characters fails
 
-**Motivation**: Ensures phone field accepts various phone formats.
+**Setup:** ContactValidator instance
 
-**Input**:
-- phone: "555-1234" (8 characters, short but valid)
-- phone: "1234567890" (10 characters, minimum)
-- phone: "12345678901234567890" (20 characters, maximum)
-- phone: undefined (optional field)
+**Input:** "123456789012345678901" (21 chars)
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validatePhone()"
-- Spec: main.md FR1 - "Phone number (optional, 10-20 characters)"
+**Expected Result:** isValid returns false, error "Phone must be 10-20 characters"
 
-**Expected Results**:
-- validatePhone() returns ValidationResult with isValid === true
-- errors Map is empty
-- undefined phone is considered valid (optional field)
+### TC-10: Empty Phone (Optional)
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validatePhone()"
+**Purpose:** Verify empty phone passes (optional field)
 
----
+**Setup:** ContactValidator instance
 
-### Test: Validate invalid phone - too short
+**Input:** undefined or ""
 
-**Purpose**: Verify that phone numbers shorter than 10 characters are rejected.
+**Expected Result:** isValid returns true, no errors
 
-**Motivation**: Enforces field constraints. Ensures phone numbers are complete.
+### TC-11: Valid Notes
 
-**Input**:
-- phone: "123" (3 characters)
+**Purpose:** Verify notes within 500 characters pass
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validatePhone()"
-- Spec: main.md FR2 - "Phone must be valid format if provided"
+**Setup:** ContactValidator instance
 
-**Expected Results**:
-- validatePhone() returns ValidationResult with isValid === false
-- errors Map contains: "phone" → "Phone must be 10-20 characters"
+**Input:** String with 500 characters
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validatePhone()"
+**Expected Result:** isValid returns true, no errors
 
----
+### TC-12: Notes Too Long
 
-### Test: Validate invalid phone - too long
+**Purpose:** Verify notes over 500 characters fail
 
-**Purpose**: Verify that phone numbers longer than 20 characters are rejected.
+**Setup:** ContactValidator instance
 
-**Motivation**: Enforces field constraints. Prevents overly long inputs.
+**Input:** String with 501 characters
 
-**Input**:
-- phone: "123456789012345678901" (21 characters)
+**Expected Result:** isValid returns false, error "Notes must be 500 characters or less"
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validatePhone()"
-- Spec: main.md FR1 - "Phone number (optional, 10-20 characters)"
+### TC-13: validateContact All Valid
 
-**Expected Results**:
-- validatePhone() returns ValidationResult with isValid === false
-- errors Map contains: "phone" → "Phone must be 10-20 characters"
+**Purpose:** Verify full contact validation with all valid fields
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validatePhone()"
+**Setup:** ContactValidator instance
 
----
+**Input:** Contact with valid name, email, phone, notes
 
-### Test: Validate notes length
+**Expected Result:** ValidationResult with isValid=true, no errors
 
-**Purpose**: Verify that notes field accepts up to 500 characters and rejects longer input.
+### TC-14: validateContact Multiple Errors
 
-**Motivation**: Enforces field constraints. Prevents excessive notes data.
+**Purpose:** Verify all errors returned for multiple invalid fields
 
-**Input**:
-- notes: "Valid notes" (12 characters)
-- notes: "a" * 500 (500 characters, maximum)
-- notes: "a" * 501 (501 characters, exceeds maximum)
-- notes: undefined (optional field)
+**Setup:** ContactValidator instance
 
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateNotes()"
-- Spec: main.md FR1 - "Additional notes (optional, up to 500 characters)"
+**Input:** Contact with empty name and invalid email
 
-**Expected Results**:
-- Valid and undefined notes pass validation (isValid === true)
-- Notes exceeding 500 characters fail validation (isValid === false)
-- Error message: "Notes must be 500 characters or less"
-
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateNotes()"
-
----
-
-### Test: Validate entire contact object
-
-**Purpose**: Verify that validateContact() validates all fields and accumulates errors.
-
-**Motivation**: Single entry point for complete contact validation. Used before save operations.
-
-**Input**:
-- Contact with multiple validation errors:
-  - name: "" (empty)
-  - email: "invalid-email"
-  - phone: "12" (too short)
-  - notes: "a" * 501 (too long)
-
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateContact()"
-- Sequence: seq-create-contact.md (full validation before save)
-
-**Expected Results**:
-- validateContact() returns ValidationResult with isValid === false
-- errors Map contains all field errors:
-  - "name" → "Name is required (1-100 characters)"
-  - "email" → "Invalid email format"
-  - "phone" → "Phone must be 10-20 characters"
-  - "notes" → "Notes must be 500 characters or less"
-
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateContact()"
-- Spec: main.md EH1 - "Display field-level error messages"
-
----
-
-### Test: Validate contact with all valid fields
-
-**Purpose**: Verify that a contact with all valid fields passes validation.
-
-**Motivation**: Ensures valid data is accepted and can be saved.
-
-**Input**:
-- Contact with all valid fields:
-  - name: "John Doe"
-  - email: "john@example.com"
-  - phone: "555-1234-5678"
-  - notes: "Test notes"
-
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateContact()"
-
-**Expected Results**:
-- validateContact() returns ValidationResult with isValid === true
-- errors Map is empty
-
-**References**:
-- CRC: crc-ContactValidator.md - "Does: validateContact()"
-
----
-
-## Coverage Summary
-
-**Responsibilities Covered**:
-- ✅ validateName() - 3 test cases (valid, too short, too long)
-- ✅ validateEmail() - 2 test cases (valid, invalid)
-- ✅ validatePhone() - 3 test cases (valid, too short, too long)
-- ✅ validateNotes() - 1 test case (length validation)
-- ✅ validateContact() - 2 test cases (all errors, all valid)
-
-**Scenarios Covered**:
-- ✅ Happy path: All fields valid
-- ✅ Error path: Each field validation rule
-- ✅ Error path: Multiple errors accumulated
-- ✅ Edge cases: Boundary conditions (min/max lengths)
-- ✅ Optional fields: undefined values handled
-
-**Gaps**:
-- None - all ContactValidator responsibilities have tests
+**Expected Result:** ValidationResult with isValid=false, errors for both fields

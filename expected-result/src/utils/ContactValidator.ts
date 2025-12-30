@@ -1,154 +1,100 @@
 /**
+ * Contact validation logic
  * CRC: crc-ContactValidator.md
- * Spec: main.md (FR2: Create Contact - Validation, FR4: View/Edit Contact - Validation)
+ * Spec: main.md, coding-standards.md
  * Sequences: seq-create-contact.md, seq-edit-contact.md
  */
 
-import { Contact, ValidationResult } from '../models/Contact';
+import { ContactData } from '../models/Contact';
 
-/**
- * CRC: crc-ContactValidator.md
- * Field validation logic and error messages
- */
-export class ContactValidator {
-  /**
-   * CRC: crc-ContactValidator.md - "Knows: MAX_NAME_LENGTH"
-   */
-  static readonly MAX_NAME_LENGTH = 100;
+export const NAME_MIN_LENGTH = 1;
+export const NAME_MAX_LENGTH = 100;
+export const PHONE_MIN_LENGTH = 10;
+export const PHONE_MAX_LENGTH = 20;
+export const NOTES_MAX_LENGTH = 500;
+export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  /**
-   * CRC: crc-ContactValidator.md - "Knows: MIN_NAME_LENGTH"
-   */
-  static readonly MIN_NAME_LENGTH = 1;
+export interface ValidationError {
+  field: string;
+  message: string;
+}
 
-  /**
-   * CRC: crc-ContactValidator.md - "Knows: MAX_NOTES_LENGTH"
-   */
-  static readonly MAX_NOTES_LENGTH = 500;
+export interface ValidationResult {
+  valid: boolean;
+  errors: ValidationError[];
+}
 
-  /**
-   * CRC: crc-ContactValidator.md - "Knows: MIN_PHONE_LENGTH"
-   */
-  static readonly MIN_PHONE_LENGTH = 10;
-
-  /**
-   * CRC: crc-ContactValidator.md - "Knows: MAX_PHONE_LENGTH"
-   */
-  static readonly MAX_PHONE_LENGTH = 20;
-
-  /**
-   * CRC: crc-ContactValidator.md - "Does: validateName()"
-   * Ensures name is 1-100 characters
-   */
-  static validateName(name: string | undefined): ValidationResult {
-    const errors = new Map<string, string>();
-
-    if (!name || name.trim().length < this.MIN_NAME_LENGTH) {
-      errors.set('name', `Name is required (${this.MIN_NAME_LENGTH}-${this.MAX_NAME_LENGTH} characters)`);
-    } else if (name.length > this.MAX_NAME_LENGTH) {
-      errors.set('name', `Name is required (${this.MIN_NAME_LENGTH}-${this.MAX_NAME_LENGTH} characters)`);
-    }
-
-    return {
-      isValid: errors.size === 0,
-      errors,
-    };
+export function validateName(name: string | undefined): ValidationError | null {
+  if (!name || name.trim().length === 0) {
+    return { field: 'name', message: 'Name is required' };
   }
-
-  /**
-   * CRC: crc-ContactValidator.md - "Does: validateEmail()"
-   * Ensures valid email format if provided
-   */
-  static validateEmail(email: string | undefined): ValidationResult {
-    const errors = new Map<string, string>();
-
-    // Optional field - empty/undefined is valid
-    if (!email || email.trim().length === 0) {
-      return { isValid: true, errors };
-    }
-
-    // Simple email regex: name@domain.tld
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      errors.set('email', 'Invalid email format');
-    }
-
-    return {
-      isValid: errors.size === 0,
-      errors,
-    };
+  if (name.length < NAME_MIN_LENGTH) {
+    return { field: 'name', message: `Name must be at least ${NAME_MIN_LENGTH} character` };
   }
-
-  /**
-   * CRC: crc-ContactValidator.md - "Does: validatePhone()"
-   * Ensures valid phone format if provided (10-20 chars)
-   */
-  static validatePhone(phone: string | undefined): ValidationResult {
-    const errors = new Map<string, string>();
-
-    // Optional field - empty/undefined is valid
-    if (!phone || phone.trim().length === 0) {
-      return { isValid: true, errors };
-    }
-
-    // Remove common separators for length check
-    const digits = phone.replace(/[\s\-().]/g, '');
-
-    if (digits.length < this.MIN_PHONE_LENGTH || digits.length > this.MAX_PHONE_LENGTH) {
-      errors.set('phone', `Phone must be ${this.MIN_PHONE_LENGTH}-${this.MAX_PHONE_LENGTH} characters`);
-    }
-
-    return {
-      isValid: errors.size === 0,
-      errors,
-    };
+  if (name.length > NAME_MAX_LENGTH) {
+    return { field: 'name', message: `Name must be at most ${NAME_MAX_LENGTH} characters` };
   }
+  return null;
+}
 
-  /**
-   * CRC: crc-ContactValidator.md - "Does: validateNotes()"
-   * Ensures notes are within 500 characters
-   */
-  static validateNotes(notes: string | undefined): ValidationResult {
-    const errors = new Map<string, string>();
-
-    // Optional field - empty/undefined is valid
-    if (!notes || notes.trim().length === 0) {
-      return { isValid: true, errors };
-    }
-
-    if (notes.length > this.MAX_NOTES_LENGTH) {
-      errors.set('notes', `Notes must be ${this.MAX_NOTES_LENGTH} characters or less`);
-    }
-
-    return {
-      isValid: errors.size === 0,
-      errors,
-    };
+export function validateEmail(email: string | undefined): ValidationError | null {
+  if (!email || email.trim().length === 0) {
+    return null; // Email is optional
   }
-
-  /**
-   * CRC: crc-ContactValidator.md - "Does: validateContact()"
-   * Validates entire contact object
-   * Collaborator: Contact
-   */
-  static validateContact(contact: Contact): ValidationResult {
-    const allErrors = new Map<string, string>();
-
-    // Validate each field
-    const nameResult = this.validateName(contact.name);
-    const emailResult = this.validateEmail(contact.email);
-    const phoneResult = this.validatePhone(contact.phone);
-    const notesResult = this.validateNotes(contact.notes);
-
-    // Merge all errors
-    nameResult.errors.forEach((msg, field) => allErrors.set(field, msg));
-    emailResult.errors.forEach((msg, field) => allErrors.set(field, msg));
-    phoneResult.errors.forEach((msg, field) => allErrors.set(field, msg));
-    notesResult.errors.forEach((msg, field) => allErrors.set(field, msg));
-
-    return {
-      isValid: allErrors.size === 0,
-      errors: allErrors,
-    };
+  if (!EMAIL_PATTERN.test(email)) {
+    return { field: 'email', message: 'Email must be a valid email address' };
   }
+  return null;
+}
+
+export function validatePhone(phone: string | undefined): ValidationError | null {
+  if (!phone || phone.trim().length === 0) {
+    return null; // Phone is optional
+  }
+  if (phone.length < PHONE_MIN_LENGTH) {
+    return { field: 'phone', message: `Phone must be at least ${PHONE_MIN_LENGTH} characters` };
+  }
+  if (phone.length > PHONE_MAX_LENGTH) {
+    return { field: 'phone', message: `Phone must be at most ${PHONE_MAX_LENGTH} characters` };
+  }
+  return null;
+}
+
+export function validateNotes(notes: string | undefined): ValidationError | null {
+  if (!notes || notes.trim().length === 0) {
+    return null; // Notes are optional
+  }
+  if (notes.length > NOTES_MAX_LENGTH) {
+    return { field: 'notes', message: `Notes must be at most ${NOTES_MAX_LENGTH} characters` };
+  }
+  return null;
+}
+
+export function validateContact(data: ContactData): ValidationResult {
+  const errors: ValidationError[] = [];
+
+  const nameError = validateName(data.name);
+  if (nameError) errors.push(nameError);
+
+  const emailError = validateEmail(data.email);
+  if (emailError) errors.push(emailError);
+
+  const phoneError = validatePhone(data.phone);
+  if (phoneError) errors.push(phoneError);
+
+  const notesError = validateNotes(data.notes);
+  if (notesError) errors.push(notesError);
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+export function isValid(data: ContactData): boolean {
+  return validateContact(data).valid;
+}
+
+export function getErrors(data: ContactData): ValidationError[] {
+  return validateContact(data).errors;
 }

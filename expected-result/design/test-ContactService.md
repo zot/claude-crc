@@ -1,231 +1,156 @@
 # Test Design: ContactService
 
-**Source Specs**: main.md (FR2, FR3, FR4, FR5)
-**CRC Cards**: crc-ContactService.md
-**Sequences**: seq-create-contact.md, seq-edit-contact.md, seq-delete-contact.md, seq-load-contacts.md
+**Source CRC:** crc-ContactService.md
+**Source Spec:** main.md (FR2-FR6), coding-standards.md
 
-## Overview
+## Purpose
 
-Test suite for ContactService covering business logic, validation integration, and coordination with storage.
+Test business logic for Contact CRUD operations.
 
 ## Test Cases
 
-### Test: Create contact with valid data
+### TC-1: Create Contact Success
 
-**Purpose**: Verify that creating a contact with valid data generates ID, sets timestamps, validates, and persists.
+**Purpose:** Verify contact creation with valid data
 
-**Motivation**: Core create functionality. Integration of validation and storage.
+**Setup:**
+- Mock ContactValidator (returns valid)
+- Mock IContactRepository
 
-**Input**:
-- name: "John Doe"
-- email: "john@example.com"
-- phone: "555-1234"
-- notes: "Test contact"
+**Input:** Valid contact form data (name, email, phone, notes)
 
-**References**:
-- CRC: crc-ContactService.md - "Does: createContact()"
-- Sequence: seq-create-contact.md
+**Expected Result:**
+- generateId() called
+- created and modified timestamps set
+- repository.save() called with Contact
+- Returns created Contact
 
-**Expected Results**:
-- UUID generated for id
-- created and modified timestamps set to current time
-- Contact validated via ContactValidator
-- Contact saved via ContactStorage
-- createContact() returns new contact object
-- Contact has all input fields plus id and timestamps
+### TC-2: Create Contact Validation Failure
 
-**References**:
-- CRC: crc-ContactService.md - "Does: generateId()"
-- Spec: main.md FR2 - "Generate unique ID automatically, set created and modified timestamps"
+**Purpose:** Verify creation fails with invalid data
 
----
+**Setup:**
+- Mock ContactValidator (returns invalid with errors)
+- Mock IContactRepository
 
-### Test: Create contact with validation error
+**Input:** Invalid contact form data (empty name)
 
-**Purpose**: Verify that creating a contact with invalid data fails validation and is not saved.
+**Expected Result:**
+- Throws validation error
+- repository.save() NOT called
 
-**Motivation**: Prevents invalid data from being persisted.
+### TC-3: Update Contact Success
 
-**Input**:
-- name: "" (empty, invalid)
-- email: "john@example.com"
+**Purpose:** Verify contact update with valid data
 
-**References**:
-- CRC: crc-ContactService.md - "Does: createContact()"
-- Sequence: seq-create-contact.md (validation path)
+**Setup:**
+- Mock ContactValidator (returns valid)
+- Mock IContactRepository with existing contact
 
-**Expected Results**:
-- ContactValidator returns validation errors
-- createContact() throws error with validation messages
-- No contact saved to storage
-- ID not generated (validation fails first)
+**Input:** Contact ID and updated form data
 
-**References**:
-- CRC: crc-ContactService.md collaborates with ContactValidator
-- Spec: main.md FR2 - "Validation: Name is required"
+**Expected Result:**
+- modified timestamp updated (created unchanged)
+- repository.save() called
+- Returns updated Contact
 
----
+### TC-4: Update Contact Not Found
 
-### Test: Update contact with valid data
+**Purpose:** Verify update fails for non-existent contact
 
-**Purpose**: Verify that updating a contact validates data, updates modified timestamp, and persists.
+**Setup:**
+- Mock IContactRepository (returns null for findById)
 
-**Motivation**: Core update functionality. Ensures changes are saved correctly.
+**Input:** Non-existent contact ID
 
-**Input**:
-- Existing contact with id "uuid-123"
-- Updated fields: name "John Smith", email "john.smith@example.com"
+**Expected Result:**
+- Throws "Contact not found" error
+- repository.save() NOT called
 
-**References**:
-- CRC: crc-ContactService.md - "Does: updateContact()"
-- Sequence: seq-edit-contact.md
+### TC-5: Delete Contact Success
 
-**Expected Results**:
-- Contact retrieved from storage
-- Updated fields merged with existing data
-- modified timestamp updated to current time
-- Contact validated via ContactValidator
-- Contact saved via ContactStorage
-- updateContact() returns updated contact
+**Purpose:** Verify contact deletion
 
-**References**:
-- CRC: crc-ContactService.md - "Does: updateContact()"
-- Spec: main.md FR4 - "Update modified timestamp on save"
+**Setup:**
+- Mock IContactRepository with existing contact
 
----
+**Input:** Existing contact ID
 
-### Test: Update non-existent contact
+**Expected Result:**
+- repository.delete() called with ID
+- Returns void/success
 
-**Purpose**: Verify that attempting to update a contact that doesn't exist throws error.
+### TC-6: Delete Contact Not Found
 
-**Motivation**: Handles invalid ID gracefully. Prevents creating unintended contacts.
+**Purpose:** Verify delete fails for non-existent contact
 
-**Input**:
-- Contact id: "invalid-uuid"
-- Updated fields: name "Test"
+**Setup:**
+- Mock IContactRepository (returns null for findById)
 
-**References**:
-- CRC: crc-ContactService.md - "Does: updateContact()"
+**Input:** Non-existent contact ID
 
-**Expected Results**:
-- Storage returns null for getContact()
-- updateContact() throws error: "Contact not found"
-- No new contact created
+**Expected Result:**
+- Throws "Contact not found" error
+- repository.delete() NOT called
 
-**References**:
-- CRC: crc-ContactService.md collaborates with ContactStorage
+### TC-7: Get Contact Success
 
----
+**Purpose:** Verify single contact retrieval
 
-### Test: Delete contact
+**Setup:**
+- Mock IContactRepository with existing contact
 
-**Purpose**: Verify that deleting a contact removes it from storage.
+**Input:** Existing contact ID
 
-**Motivation**: Core delete functionality. Ensures data removal.
+**Expected Result:**
+- repository.findById() called
+- Returns Contact
 
-**Input**:
-- Existing contact with id "uuid-123"
+### TC-8: Get Contact Not Found
 
-**References**:
-- CRC: crc-ContactService.md - "Does: deleteContact()"
-- Sequence: seq-delete-contact.md
+**Purpose:** Verify get returns null for non-existent contact
 
-**Expected Results**:
-- ContactStorage.deleteContact() called with id
-- deleteContact() completes successfully
-- Subsequent getContact() returns null
+**Setup:**
+- Mock IContactRepository (returns null)
 
-**References**:
-- CRC: crc-ContactService.md - "Does: deleteContact()"
-- Spec: main.md FR5 - "Remove from storage on confirm"
+**Input:** Non-existent contact ID
 
----
+**Expected Result:**
+- Returns null
 
-### Test: Get contact by ID
+### TC-9: Get All Contacts
 
-**Purpose**: Verify that a contact can be retrieved by ID.
+**Purpose:** Verify retrieval of all contacts sorted by name
 
-**Motivation**: Supports edit view. Ensures data access.
+**Setup:**
+- Mock IContactRepository with multiple contacts
 
-**Input**:
-- Existing contact with id "uuid-123"
+**Input:** None
 
-**References**:
-- CRC: crc-ContactService.md - "Does: getContact()"
-- Sequence: seq-edit-contact.md
+**Expected Result:**
+- repository.findAll() called
+- Returns Contact[] sorted alphabetically by name
 
-**Expected Results**:
-- getContact() returns contact object
-- Contact data matches stored data
+### TC-10: Get All Contacts Empty
 
-**References**:
-- CRC: crc-ContactService.md - "Does: getContact()"
+**Purpose:** Verify empty array returned when no contacts
 
----
+**Setup:**
+- Mock IContactRepository (returns empty array)
 
-### Test: Get all contacts sorted by name
+**Input:** None
 
-**Purpose**: Verify that getAllContacts() returns contacts sorted alphabetically by name.
+**Expected Result:**
+- Returns empty array []
 
-**Motivation**: List view requires sorted data. Ensures consistent ordering.
+### TC-11: Generate ID Format
 
-**Input**:
-- Storage contains 5 contacts with names: "Zebra", "Apple", "Mango", "Banana", "Cherry"
+**Purpose:** Verify generated IDs are valid UUIDs
 
-**References**:
-- CRC: crc-ContactService.md - "Does: getAllContacts()"
-- Sequence: seq-load-contacts.md
+**Setup:** ContactService instance
 
-**Expected Results**:
-- getAllContacts() returns array of 5 contacts
-- Contacts sorted: "Apple", "Banana", "Cherry", "Mango", "Zebra"
-- Sorting is case-insensitive
+**Input:** Call generateId() multiple times
 
-**References**:
-- CRC: crc-ContactService.md - "Does: getAllContacts()"
-- Spec: main.md FR3 - "Contacts sorted alphabetically by name"
-
----
-
-### Test: Generate unique IDs
-
-**Purpose**: Verify that generateId() produces unique UUIDs.
-
-**Motivation**: Prevents ID collisions. Ensures data integrity.
-
-**Input**:
-- Call generateId() 1000 times
-
-**References**:
-- CRC: crc-ContactService.md - "Does: generateId()"
-
-**Expected Results**:
-- Each ID is unique (no duplicates in 1000 IDs)
-- Each ID matches UUID format
-- IDs are non-empty strings
-
-**References**:
-- CRC: crc-ContactService.md - "Does: generateId()"
-- Spec: main.md FR1 - "ID: Unique identifier (auto-generated UUID)"
-
----
-
-## Coverage Summary
-
-**Responsibilities Covered**:
-- ✅ createContact() - 2 test cases (valid, validation error)
-- ✅ updateContact() - 2 test cases (valid, not found)
-- ✅ deleteContact() - 1 test case
-- ✅ getContact() - 1 test case
-- ✅ getAllContacts() - 1 test case (with sorting)
-- ✅ generateId() - 1 test case
-
-**Scenarios Covered**:
-- ✅ Happy path: Create, update, delete, get
-- ✅ Error path: Validation errors
-- ✅ Error path: Non-existent contact
-- ✅ Business logic: ID generation, timestamp management, sorting
-- ✅ Integration: Validation and storage coordination
-
-**Gaps**:
-- None - all ContactService responsibilities have tests
+**Expected Result:**
+- Returns valid UUID v4 format strings
+- All IDs are unique

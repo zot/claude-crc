@@ -1,175 +1,98 @@
 /**
+ * Contact list view
  * CRC: crc-ContactListView.md
- * Spec: main.md (FR3: View Contact List, UI2: List View)
- * Sequence: seq-load-contacts.md
+ * Spec: main.md
+ * Sequences: seq-load-contacts.md, seq-create-contact.md, seq-edit-contact.md
  */
 
 import { Contact } from '../models/Contact';
 import { ContactService } from '../services/ContactService';
+import { Router } from '../services/Router';
 
-/**
- * CRC: crc-ContactListView.md
- * Contact list UI with navigation
- */
 export class ContactListView {
-  /**
-   * CRC: crc-ContactListView.md - "Knows: contacts"
-   */
+  private container: HTMLElement;
+  private contactService: ContactService;
+  private router: Router;
   private contacts: Contact[] = [];
 
-  /**
-   * CRC: crc-ContactListView.md - "Knows: service"
-   */
-  private service: ContactService;
-
-  /**
-   * CRC: crc-ContactListView.md - "Knows: selectedContactId"
-   */
-  private selectedContactId?: string;
-
-  private container: HTMLElement;
-  private onNavigateToDetail?: (id?: string) => void;
-
-  constructor(container: HTMLElement, service: ContactService) {
+  constructor(
+    container: HTMLElement,
+    contactService: ContactService,
+    router: Router
+  ) {
     this.container = container;
-    this.service = service;
+    this.contactService = contactService;
+    this.router = router;
   }
 
-  /**
-   * Set navigation callback
-   */
-  setNavigationHandler(handler: (id?: string) => void) {
-    this.onNavigateToDetail = handler;
-  }
+  async render(): Promise<void> {
+    this.contacts = await this.contactService.getAllContacts();
 
-  /**
-   * CRC: crc-ContactListView.md - "Does: loadContacts()"
-   * Sequence: seq-load-contacts.md
-   * Loads contacts from service
-   */
-  async loadContacts(): Promise<void> {
-    this.contacts = await this.service.getAllContacts();
-    this.render();
-  }
-
-  /**
-   * CRC: crc-ContactListView.md - "Does: render()"
-   * Renders the contact list HTML
-   */
-  render(): void {
     if (this.contacts.length === 0) {
-      this.showEmptyState();
+      this.renderEmptyState();
       return;
     }
 
-    const html = `
-      <div class="contact-list-view">
-        <div class="header">
-          <h1>Contacts</h1>
-          <button id="add-contact-btn" class="btn-primary">Add Contact</button>
-        </div>
-        <div class="contact-list">
-          ${this.contacts.map(contact => this.renderContactRow(contact)).join('')}
-        </div>
+    this.container.innerHTML = `
+      <div class="contact-list-header">
+        <h1>Contacts</h1>
+        <button class="btn btn-primary add-contact-btn">Add Contact</button>
       </div>
+      <ul class="contact-list">
+        ${this.contacts.map((contact) => this.renderContactItem(contact)).join('')}
+      </ul>
     `;
 
-    this.container.innerHTML = html;
     this.attachEventListeners();
   }
 
-  /**
-   * Render single contact row
-   */
-  private renderContactRow(contact: Contact): string {
+  private renderEmptyState(): void {
+    this.container.innerHTML = `
+      <div class="contact-list-header">
+        <h1>Contacts</h1>
+        <button class="btn btn-primary add-contact-btn">Add Contact</button>
+      </div>
+      <div class="empty-state">
+        <p>No contacts yet. Add your first contact!</p>
+      </div>
+    `;
+
+    this.attachEventListeners();
+  }
+
+  private renderContactItem(contact: Contact): string {
     return `
-      <div class="contact-row" data-id="${contact.id}">
+      <li class="contact-item" data-id="${contact.id}">
         <div class="contact-name">${this.escapeHtml(contact.name)}</div>
-        <div class="contact-email">${this.escapeHtml(contact.email || '')}</div>
-        <div class="contact-phone">${this.escapeHtml(contact.phone || '')}</div>
-      </div>
+        <div class="contact-details">
+          ${contact.email ? `<span class="contact-email">${this.escapeHtml(contact.email)}</span>` : ''}
+          ${contact.phone ? `<span class="contact-phone">${this.escapeHtml(contact.phone)}</span>` : ''}
+        </div>
+      </li>
     `;
   }
 
-  /**
-   * CRC: crc-ContactListView.md - "Does: showEmptyState()"
-   * Displays "no contacts" message
-   */
-  showEmptyState(): void {
-    const html = `
-      <div class="contact-list-view">
-        <div class="header">
-          <h1>Contacts</h1>
-          <button id="add-contact-btn" class="btn-primary">Add Contact</button>
-        </div>
-        <div class="empty-state">
-          <p>No contacts yet</p>
-          <p>Click "Add Contact" to create your first contact</p>
-        </div>
-      </div>
-    `;
-
-    this.container.innerHTML = html;
-    this.attachEventListeners();
-  }
-
-  /**
-   * Attach event listeners to DOM elements
-   */
   private attachEventListeners(): void {
-    // Add Contact button
-    const addBtn = this.container.querySelector('#add-contact-btn');
-    if (addBtn) {
-      addBtn.addEventListener('click', () => this.onAddContactClick());
-    }
+    const addBtn = this.container.querySelector('.add-contact-btn');
+    addBtn?.addEventListener('click', () => this.handleAddClick());
 
-    // Contact row clicks
-    const rows = this.container.querySelectorAll('.contact-row');
-    rows.forEach(row => {
-      row.addEventListener('click', () => {
-        const id = row.getAttribute('data-id');
-        if (id) {
-          this.onContactClick(id);
-        }
+    const contactItems = this.container.querySelectorAll('.contact-item');
+    contactItems.forEach((item) => {
+      item.addEventListener('click', () => {
+        const id = item.getAttribute('data-id');
+        if (id) this.handleContactClick(id);
       });
     });
   }
 
-  /**
-   * CRC: crc-ContactListView.md - "Does: onContactClick()"
-   * Navigates to contact detail view
-   */
-  onContactClick(id: string): void {
-    this.selectedContactId = id;
-    if (this.onNavigateToDetail) {
-      this.onNavigateToDetail(id);
-    }
+  private handleAddClick(): void {
+    this.router.navigate('/new');
   }
 
-  /**
-   * CRC: crc-ContactListView.md - "Does: onAddContactClick()"
-   * Navigates to create contact view
-   */
-  onAddContactClick(): void {
-    if (this.onNavigateToDetail) {
-      this.onNavigateToDetail(); // undefined = create mode
-    }
+  private handleContactClick(id: string): void {
+    this.router.navigate(`/edit/${id}`);
   }
 
-  /**
-   * CRC: crc-ContactListView.md - "Does: sortContactsByName()"
-   * Sorts contacts alphabetically
-   * Note: Service already sorts, this is for consistency
-   */
-  sortContactsByName(contacts: Contact[]): Contact[] {
-    return contacts.sort((a, b) =>
-      a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-    );
-  }
-
-  /**
-   * Escape HTML to prevent XSS
-   */
   private escapeHtml(text: string): string {
     const div = document.createElement('div');
     div.textContent = text;

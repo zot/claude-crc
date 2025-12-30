@@ -73,6 +73,14 @@ Ask Claude: "generate code, tests, and docs"
    Ask Claude: "Generate Level 2 specs for specs/main.md using designer agent"
    ```
 4. **Review generated artifacts** in the `design/` directory
+5. **Implement**
+   ```
+   Ask Claude: "implement the design"
+   Ask Claude: "run the gap analyzer"
+     -- this will generate traceability information
+   Address any gap concerns you desire, like unimplemented tests.
+   test the app, `npm run dev` should do it; if there are problems, tell Claude to fix them.
+   ```
 5. **Compare with `expected-result/`** to see what good designs look like
 
 ---

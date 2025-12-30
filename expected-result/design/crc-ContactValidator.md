@@ -1,42 +1,32 @@
 # ContactValidator
 
-**Source Spec:** main.md (FR2: Create Contact - Validation, FR4: View/Edit Contact - Validation)
+**Source Spec:** main.md, coding-standards.md
 
 ## Responsibilities
 
 ### Knows
-- `MAX_NAME_LENGTH: number` - Maximum length for name field (100)
-- `MIN_NAME_LENGTH: number` - Minimum length for name field (1)
-- `MAX_NOTES_LENGTH: number` - Maximum length for notes field (500)
-- `MIN_PHONE_LENGTH: number` - Minimum length for phone (10)
-- `MAX_PHONE_LENGTH: number` - Maximum length for phone (20)
+- NAME_MIN_LENGTH: number - Minimum name length (1)
+- NAME_MAX_LENGTH: number - Maximum name length (100)
+- PHONE_MIN_LENGTH: number - Minimum phone length (10)
+- PHONE_MAX_LENGTH: number - Maximum phone length (20)
+- NOTES_MAX_LENGTH: number - Maximum notes length (500)
+- EMAIL_PATTERN: RegExp - Valid email format pattern
 
 ### Does
-- `validateName(name: string): ValidationResult` - Ensures name is 1-100 characters
-- `validateEmail(email: string): ValidationResult` - Ensures valid email format if provided
-- `validatePhone(phone: string): ValidationResult` - Ensures valid phone format if provided (10-20 chars)
-- `validateNotes(notes: string): ValidationResult` - Ensures notes are within 500 characters
-- `validateContact(contact: Contact): ValidationResult` - Validates entire contact object
+- validateName: Validate name is present and within length limits
+- validateEmail: Validate email format if provided
+- validatePhone: Validate phone format if provided
+- validateNotes: Validate notes length if provided
+- validateContact: Validate all fields, return ValidationResult
+- isValid: Check if contact data is valid (boolean)
+- getErrors: Get all validation errors for a contact
 
 ## Collaborators
 
-- **Contact** (src/models/Contact.ts) - Provides contact data to validate
+- ContactService: Calls validator before save operations
+- ContactFormView: Calls validator for real-time form validation
 
 ## Sequences
 
-- seq-create-contact.md
-- seq-edit-contact.md
-
-## Related CRC Cards
-
-- crc-Contact.md
-
-## Design Patterns
-
-- **Strategy Pattern** - Each validation rule is independent and composable
-
-## Key Design Decisions
-
-1. **Fail fast** - Return validation errors immediately without partial saves
-2. **Clear error messages** - Include field name, constraint, and current value
-3. **Optional field handling** - Empty/null optional fields pass validation
+- seq-create-contact.md: Validates new contact data
+- seq-edit-contact.md: Validates updated contact data
