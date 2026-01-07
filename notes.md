@@ -1,3 +1,5 @@
+Make a lighter weight process that only makes a UI spec as the design. Take from ui-mcp's ui-builder.
+
 Make a progress-report blog post about this
 - the need to strengthen the requirement for test-design generation
 - the value of both HollowWorld and p2p-webapp using claude-crc for their design process
